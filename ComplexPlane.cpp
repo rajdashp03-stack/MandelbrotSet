@@ -15,6 +15,9 @@ ComplexPlane::ComplexPlane(int pixelWidth, int pixelHeight) {
 	m_state = State::CALCULATING;
 	m_vArray.setPrimitiveType(Points);
 	m_vArray.resize(pixelWidth * pixelHeight);
+	m_numThreads = (std::thread::hardware_concurrency() == 0) ? 2 : (std::thread::hardware_concurrency() - 2);
+	m_pixelsPerThread.y = m_pixel_size.y / m_numThreads;
+	m_pixelsPerThread.x = m_pixel_size.x;
 }
 
 void ComplexPlane::draw(RenderTarget& target, RenderStates states) const {
@@ -62,6 +65,31 @@ void ComplexPlane::updateRender() {
 
 	if (m_state == State::CALCULATING) {
 
+		//intialize threads
+		//join threads
+		Vector2i start(0, 0);
+		Vector2i end = m_pixelsPerThread;
+
+		for (int i = 0; i < m_numThreads; ++i) {
+
+			m_threadVect.push_back(std::thread(&ComplexPlane::mapArrayThreaded, this, start.x, end.x, start.y, end.y));
+			if (i != 1) {
+				start.y += m_pixelsPerThread.y;
+				end.y += m_pixelsPerThread.y;
+			}
+		}
+		
+		//std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+		for (auto& t : m_threadVect) {
+
+			if (t.joinable()) {
+				t.join();
+			}
+		}
+	
+
+		/*
 		for (int i = 0; i < m_pixel_size.y; ++i) {
 
 			for (int j = 0; j < m_pixel_size.x; ++j) {
@@ -79,6 +107,7 @@ void ComplexPlane::updateRender() {
 
 			}
 		}
+		*/
 
 		m_state = State::DISPLAYING;
 	}
@@ -168,4 +197,26 @@ Vector2f ComplexPlane::mapPixelToCoords(Vector2i mousePixel) {
 
 	return newCoord;
 	//TODO: change imaginary plane range boundaries
+}
+
+void ComplexPlane::mapArrayThreaded(int xStart, int xEnd, int yStart, int yEnd) {
+
+	for (int i = yStart; i < yEnd; ++i) {
+
+		for (int j = xStart; j < xEnd; ++j) {
+
+			int index = j + i * xEnd;
+			
+			m_vArray[index].position = { (float)j, (float)i };
+
+			Vector2i mapPixel = { j, i };
+			int numIter = this->countIterations(this->mapPixelToCoords(mapPixel));
+			Uint8 r, g, b;
+
+			this->iterationsToRGB(numIter, r, g, b);
+
+			m_vArray[index].color = { r, g, b };
+
+		}
+	}
 }
