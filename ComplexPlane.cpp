@@ -87,7 +87,7 @@ void ComplexPlane::updateRender() {
 				t.join();
 			}
 		}
-	
+
 
 		/*
 		for (int i = 0; i < m_pixel_size.y; ++i) {
