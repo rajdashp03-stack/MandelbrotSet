@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <chrono>
 #include "ComplexPlane.h"
 
 using namespace sf;
@@ -23,6 +24,12 @@ int main()
 	displayText.setFont(font);
 	displayText.setFillColor(Color::White);
 	displayText.setCharacterSize(30);
+
+	bool isFirst = true;
+
+	chrono::time_point<chrono::steady_clock> start = std::chrono::steady_clock::now();
+	std::chrono::duration<long long, std::milli> time;
+	chrono::time_point<chrono::steady_clock> end;
 
 	while (window.isOpen())
 	{
@@ -63,7 +70,14 @@ int main()
 
 		///Update
 
-		plane.updateRender();
+		end = std::chrono::steady_clock::now();
+		time = std::chrono::duration_cast<chrono::milliseconds>(end - start);
+		if (time.count() >= 500 || isFirst) {
+
+			plane.updateRender();
+			isFirst = false;
+			start = std::chrono::steady_clock::now();
+		}
 		plane.loadText(displayText);
 
 		///Draw
