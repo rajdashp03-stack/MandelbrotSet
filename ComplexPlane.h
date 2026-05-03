@@ -11,6 +11,7 @@ const unsigned int MAX_ITER = 64;
 const float BASE_WIDTH = 4.0;
 const float BASE_HEIGHT = 4.0;
 const float BASE_ZOOM = 0.5;
+const int MIN_THREADS = 2;
 
 enum State {CALCULATING, DISPLAYING};
 
@@ -38,6 +39,7 @@ private:
 	int m_zoomCount;
 	float m_aspectRatio; 
 	int m_numThreads;
+	bool needsOffset;
 	Vector2i m_pixelsPerThread;
 	std::mutex mtx;
 	std::vector<std::thread> m_threadVect;

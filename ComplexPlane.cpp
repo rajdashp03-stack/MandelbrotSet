@@ -15,9 +15,10 @@ ComplexPlane::ComplexPlane(int pixelWidth, int pixelHeight) {
 	m_state = State::CALCULATING;
 	m_vArray.setPrimitiveType(Points);
 	m_vArray.resize(pixelWidth * pixelHeight);
-	m_numThreads = (std::thread::hardware_concurrency() == 0) ? 2 : (std::thread::hardware_concurrency() - 2);
+	m_numThreads = (std::thread::hardware_concurrency() == 0) ? MIN_THREADS : (std::thread::hardware_concurrency() - 2);
 	m_pixelsPerThread.y = m_pixel_size.y / m_numThreads;
 	m_pixelsPerThread.x = m_pixel_size.x;
+	needsOffset = ((m_pixelsPerThread.y * m_numThreads) != m_pixel_size.y) ? true : false;
 }
 
 void ComplexPlane::draw(RenderTarget& target, RenderStates states) const {
@@ -73,9 +74,11 @@ void ComplexPlane::updateRender() {
 		for (int i = 0; i < m_numThreads; ++i) {
 
 			m_threadVect.push_back(std::thread(&ComplexPlane::mapArrayThreaded, this, start.x, end.x, start.y, end.y));
-			if (i != 1) {
+			if (!(needsOffset && i == 1)) {
 				start.y += m_pixelsPerThread.y;
 				end.y += m_pixelsPerThread.y;
+				
+				if (i == m_numThreads - 1 && needsOffset) { end.y += m_pixel_size.y - end.y; }
 			}
 		}
 		
