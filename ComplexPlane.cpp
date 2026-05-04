@@ -58,7 +58,7 @@ void ComplexPlane::loadText(Text& text) {
 	strStream << "Mandelbrot Set\nCenter: (" << m_plane_center.x << "," << m_plane_center.y << ")\n";
 	strStream << "Cursor: (" << m_mouseLocation.x << "," << m_mouseLocation.y << ")\n";
 	strStream << "Left-click to Zoom in\n";
-	strStream << "Right-clic to Zoom out";
+	strStream << "Right-click to Zoom out";
 	text.setString(strStream.str());
 }
 
@@ -91,26 +91,7 @@ void ComplexPlane::updateRender() {
 			}
 		}
 
-
-		/*
-		for (int i = 0; i < m_pixel_size.y; ++i) {
-
-			for (int j = 0; j < m_pixel_size.x; ++j) {
-
-				int index = j + i * m_pixel_size.x;
-
-				m_vArray[index].position = { (float)j, (float)i };
-				Vector2i mapPixel = { j, i };
-				int numIter = this->countIterations(this->mapPixelToCoords(mapPixel));
-				Uint8 r, g, b;
-
-				this->iterationsToRGB(numIter, r, g, b);
-				
-				m_vArray[index].color = { r, g, b };
-
-			}
-		}
-		*/
+		m_threadVect.clear();
 
 		m_state = State::DISPLAYING;
 	}
