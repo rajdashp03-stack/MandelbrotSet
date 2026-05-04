@@ -54,7 +54,7 @@ void ComplexPlane::loadText(Text& text) {
 	strStream << "Mandelbrot Set\nCenter: (" << m_plane_center.x << "," << m_plane_center.y << ")\n";
 	strStream << "Cursor: (" << m_mouseLocation.x << "," << m_mouseLocation.y << ")\n";
 	strStream << "Left-click to Zoom in\n";
-	strStream << "Right-clic to Zoom out";
+	strStream << "Right-click to Zoom out";
 	text.setString(strStream.str());
 }
 
