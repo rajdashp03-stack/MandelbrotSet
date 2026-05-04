@@ -70,10 +70,12 @@ int main()
 
 		///Update
 
+		//checks time passed after start
 		end = std::chrono::steady_clock::now();
 		time = std::chrono::duration_cast<chrono::milliseconds>(end - start);
 		if (time.count() >= 500 || isFirst) {
 
+			//updates render of Mandelbrot set and sets isFirst to false
 			plane.updateRender();
 			isFirst = false;
 			start = std::chrono::steady_clock::now();
