@@ -167,5 +167,4 @@ Vector2f ComplexPlane::mapPixelToCoords(Vector2i mousePixel) {
 	newCoord.y = ((mousePixel.y - (float)m_pixel_size.y) / (0 - (float)m_pixel_size.y)) * (m_plane_size.y) + (m_plane_center.y - m_plane_size.y / 2.0);
 
 	return newCoord;
-	//TODO: change imaginary plane range boundaries
 }
